@@ -14,17 +14,18 @@ namespace SsrsMongo
         {
             var eater = new Eater();
 
-            using (var repo =  new ReportUsageRepo())
+            var repo = new ReportUsageRepo();
+            foreach (var item in repo.GetItems(DateTime.Now.AddDays(-8)))
             {
-                foreach (var item in repo.GetItems(DateTime.Now.AddDays(-8)))
-                {
-                    eater.ConsumeReportItem(item);
-                }                
+                eater.ConsumeReportItem(item);
             }
 
             var json = eater.BlowChunks();
 
-            File.WriteAllText(@"C:\Users\sichj\Desktop\output.json", json);
+            var desktop = System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var outputfile = Path.Combine(desktop, "output.json");
+
+            File.WriteAllText(outputfile, json);
         }
     }
 }
