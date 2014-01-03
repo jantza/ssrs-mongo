@@ -74,8 +74,12 @@ namespace SsrsMongo.Mongo
             foreach (var parameter in parameters)
             {
                 var keyValue = parameter.Split(new[] { ": " }, StringSplitOptions.None);
-
-                if (2 != keyValue.Length)
+                
+                if (keyValue.Length > 0 && this.IgnoreKeys.Contains(keyValue[0]))
+                {
+                    continue;
+                }
+                else if (2 != keyValue.Length)
                 {
                     Console.WriteLine("Argument Count Error While Parsing: '" + parameter + "'");
                     continue;
@@ -129,7 +133,7 @@ namespace SsrsMongo.Mongo
                 }
                 else
                 {
-                    throw new Exception("Please help...");
+                    throw new ApplicationException("Something went wrong here");
                 }
             }
 
