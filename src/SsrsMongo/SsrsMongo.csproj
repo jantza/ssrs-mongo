@@ -65,11 +65,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Mongo\MongoDataEater.cs" />
+    <Compile Include="MongoImporter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\ReportUsageItem.cs" />
-    <Compile Include="SQL\ReportUsageRepo.cs" />
+    <Compile Include="ReportUsageItem.cs" />
+    <Compile Include="ReportServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

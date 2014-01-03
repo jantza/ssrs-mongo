@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SsrsMongo.SQL;
-using SsrsMongo.Mongo;
 
 namespace SsrsMongo
 {
     class Program
     {
-        const int DaysBack = -8;
-        static readonly string[] KeysToIgnore = new[] 
+        const int MaxDaysBack = -8;
+        static readonly string[] ParametersToIgnore = new[] 
         { 
             "RESOURCE_ID", 
             "RESOURCES", 
@@ -21,15 +14,15 @@ namespace SsrsMongo
 
         static void Main(string[] args)
         {
-            var repo = new ReportUsageRepo();
+            var importer = new MongoImporter(ParametersToIgnore);
 
-            var items = repo.GetItems(DateTime.Now.AddDays(DaysBack));
+            var lastDate = importer.GetLastExecutionTime() ?? DateTime.Now.AddDays(MaxDaysBack);
 
-            var eater = new MongoDataEater(KeysToIgnore);
+            var items = new ReportServer().GetItems(lastDate);            
 
-            var documentCount = eater.ConsumeData(items);
+            var documentCount = importer.ImportItems(items);
 
-            Console.WriteLine("Processed {0} documents.", documentCount);
+            Console.WriteLine("Processed {0} documents starting from {1}", documentCount, lastDate);
         }
     }
 }
