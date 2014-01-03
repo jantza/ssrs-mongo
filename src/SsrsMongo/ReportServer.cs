@@ -7,8 +7,14 @@ namespace SsrsMongo
 {
     public class ReportServer
     {
-        public ReportServer()
-        { }
+        public string ConnectionString { get; private set; }
+
+
+        public ReportServer(string connectionString)
+        {
+            this.ConnectionString = connectionString;
+        }
+
 
         public IEnumerable<ReportUsageItem> GetItems(DateTime? lastExecutionTime)
         {
@@ -17,7 +23,7 @@ namespace SsrsMongo
 FROM REPORTSERVER_ESP.DBO.EXECUTIONLOG (NOLOCK) EL INNER JOIN REPORTSERVER_ESP.DBO.CATALOG (NOLOCK) C ON EL.REPORTID=C.ITEMID
 WHERE(@LAST_EXECUTION_TIME IS NULL OR EL.TIMESTART > @LAST_EXECUTION_TIME)";
 
-            using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["reportsServer"].ConnectionString))
+            using (var con = new SqlConnection(this.ConnectionString))
             {
                 var cmd = new SqlCommand { CommandText = queryText, Connection = con };
                 cmd.Parameters.Add(new SqlParameter()

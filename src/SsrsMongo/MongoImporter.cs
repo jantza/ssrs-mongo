@@ -10,15 +10,22 @@ namespace SsrsMongo
 {
     public class MongoImporter
     {
-        private List<string> IgnoreKeys { get; set; }
+        public List<string> IgnoreKeys { get; set; }
+        public string ConnectionString { get; private set; }
+        public string DbName { get; private set; }
+        public string CollectionName { get; private set; }   
 
 
-        public MongoImporter()
+        public MongoImporter(string connectionString, string databaseName, string collectionName)
         {
             this.IgnoreKeys = new List<string>();
+            this.ConnectionString = connectionString;
+            this.DbName = databaseName;
+            this.CollectionName = collectionName;
         }
 
-        public MongoImporter(IEnumerable<string> ignoreKeys)
+        public MongoImporter(string connectionString, string databaseName, string collectionName, IEnumerable<string> ignoreKeys)
+            : this(connectionString, databaseName, collectionName)
         {
             this.IgnoreKeys = ignoreKeys.ToList();
         }
@@ -77,13 +84,11 @@ namespace SsrsMongo
         }
 
 
-        private static MongoCollection<BsonDocument> GetUsageCollection()
+        private MongoCollection<BsonDocument> GetUsageCollection()
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["mongoDb"].ConnectionString;
-            var client = new MongoClient(connectionString);
-            var server = client.GetServer();
-            var database = server.GetDatabase("ssrs");
-            var collection = database.GetCollection("usage");
+            var server = new MongoClient(this.ConnectionString).GetServer();
+            var database = server.GetDatabase(this.DbName);
+            var collection = database.GetCollection(this.CollectionName);
 
             return collection;
         }

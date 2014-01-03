@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 
 namespace SsrsMongo
 {
@@ -14,11 +15,20 @@ namespace SsrsMongo
 
         static void Main(string[] args)
         {
-            var importer = new MongoImporter(ParametersToIgnore);
+            var importer = 
+                new MongoImporter(
+                    connectionString:   ConfigurationManager.ConnectionStrings["mongoDb"].ConnectionString,
+                    databaseName:       ConfigurationManager.AppSettings["mongo_db"],
+                    collectionName:     ConfigurationManager.AppSettings["mongo_collection"],
+                    ignoreKeys:         ParametersToIgnore
+                );
 
             var lastDate = importer.GetLastExecutionTime() ?? DateTime.Now.AddDays(MaxDaysBack);
 
-            var items = new ReportServer().GetItems(lastDate);            
+            var items = 
+                new ReportServer(
+                    connectionString:   ConfigurationManager.ConnectionStrings["reportsServer"].ConnectionString
+                ).GetItems(lastDate);            
 
             var documentCount = importer.ImportItems(items);
 
