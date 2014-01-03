@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SsrsMongo.SQL;
+using SsrsMongo.Mongo;
 
 namespace SsrsMongo
 {
@@ -12,20 +13,14 @@ namespace SsrsMongo
     {
         static void Main(string[] args)
         {
-            var eater = new Eater();
-
             var repo = new ReportUsageRepo();
-            foreach (var item in repo.GetItems(DateTime.Now.AddDays(-8)))
-            {
-                eater.ConsumeReportItem(item);
-            }
 
-            var json = eater.BlowChunks();
+            var items = repo.GetItems(DateTime.Now.AddDays(-8));
 
-            var desktop = System.Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            var outputfile = Path.Combine(desktop, "output.json");
+            var eater = new MongoDataEater();
+            var documentCount = eater.ConsumeData(items);
 
-            File.WriteAllText(outputfile, json);
+            Console.WriteLine("Processed {0} documents.", documentCount);
         }
     }
 }
